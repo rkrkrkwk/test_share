@@ -1,2 +1,1 @@
-# test_share
-yes
+<meta http-equiv="refresh" content="0; url=index.html">
