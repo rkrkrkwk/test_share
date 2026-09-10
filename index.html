@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>12주 세부 목표 트래커</title>
+  <title>12주 세부 목표 트래커 (1~5 수준 평가 듀오)</title>
   <style>
     /* Notion 스타일 디자인 */
     :root {
@@ -12,7 +12,8 @@
       --muted-text: #787774;
       --border-color: #e9e9e7;
       --progress-bg: #e9e9e7;
-      --progress-fill: #2eaadc;
+      --progress-fill-1: #2eaadc; /* User 1 포인트 컬러 */
+      --progress-fill-2: #e03e3e; /* User 2 포인트 컬러 */
       --card-bg: #f7f7f5;
       --hover-bg: #efefed;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
@@ -27,16 +28,86 @@
       box-sizing: border-box;
     }
 
-    .container {
-      max-width: 1200px;
+    /* 🎯 컨트롤 패널 (Save / Load 버튼 영역) */
+    .control-panel {
+      max-width: 1600px;
+      margin: 0 auto 20px auto;
+      padding: 15px;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn:hover {
+      background-color: var(--hover-bg);
+      border-color: #ccc;
+    }
+
+    /* 2인용 레이아웃 분할 */
+    .split-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      max-width: 1600px;
       margin: 0 auto;
     }
 
-    /* 메인 목표 및 전체 진행률 */
+    .user-section {
+      padding-bottom: 20px;
+    }
+    
+    @media (min-width: 900px) {
+      .user-section:first-child {
+        border-right: 1px solid var(--border-color);
+        padding-right: 40px;
+      }
+    }
+    @media (max-width: 899px) {
+      .split-container {
+        grid-template-columns: 1fr;
+      }
+      .user-section:first-child {
+        border-bottom: 2px dashed var(--border-color);
+        margin-bottom: 20px;
+      }
+    }
+
+    /* 상단 영역 */
     .header {
       margin-bottom: 30px;
       padding-bottom: 20px;
       border-bottom: 1px solid var(--border-color);
+    }
+
+    .user-name {
+      font-family: var(--font-family);
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--muted-text);
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      margin-bottom: 10px;
     }
 
     .main-goal {
@@ -50,7 +121,7 @@
 
     .main-goal input {
       font-family: var(--font-family);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
       color: var(--text-color);
       border: none;
@@ -59,10 +130,9 @@
       width: 100%;
       background: transparent;
     }
-    
-    .main-goal input:focus {
-      border-bottom: 2px solid var(--progress-fill);
-    }
+
+    #user1-section .main-goal input:focus { border-bottom: 2px solid var(--progress-fill-1); }
+    #user2-section .main-goal input:focus { border-bottom: 2px solid var(--progress-fill-2); }
 
     .progress-container {
       width: 100%;
@@ -75,10 +145,12 @@
 
     .progress-bar {
       height: 100%;
-      background-color: var(--progress-fill);
       width: 0%;
       transition: width 0.3s ease;
     }
+    
+    #user1-section .progress-bar { background-color: var(--progress-fill-1); }
+    #user2-section .progress-bar { background-color: var(--progress-fill-2); }
 
     .progress-text {
       font-size: 14px;
@@ -107,7 +179,7 @@
     .week-header {
       font-weight: bold;
       margin-bottom: 10px;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .week-goal-input {
@@ -116,15 +188,12 @@
       background: transparent;
       border-bottom: 1px solid var(--border-color);
       font-family: var(--font-family);
-      font-size: 15px;
+      font-size: 14px;
       margin-bottom: 20px;
       padding-bottom: 5px;
       outline: none;
     }
-
-    .week-goal-input:focus {
-      border-bottom: 1px solid var(--muted-text);
-    }
+    .week-goal-input:focus { border-bottom: 1px solid var(--muted-text); }
 
     /* 요일별 섹션 */
     .day-section {
@@ -153,17 +222,13 @@
       padding: 2px 6px;
       border-radius: 4px;
     }
-
-    .add-btn:hover {
-      background-color: var(--hover-bg);
-      color: var(--text-color);
-    }
+    .add-btn:hover { background-color: var(--hover-bg); color: var(--text-color); }
 
     /* 세부 목표 리스트 */
     .task-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
     .task-item {
@@ -173,12 +238,43 @@
       padding: 2px 0;
     }
 
-    .day-checkbox {
-      width: 16px;
-      height: 16px;
+    /* 1~5 수준 평가 버튼 그룹 */
+    .rating-group {
+      display: flex;
+      gap: 3px;
+    }
+
+    .rating-btn {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid #d3d3d3;
+      background: var(--bg-color);
+      color: var(--muted-text);
+      font-size: 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      accent-color: var(--progress-fill);
-      margin: 0;
+      padding: 0;
+      transition: all 0.15s ease;
+    }
+
+    .rating-btn:hover {
+      background-color: var(--hover-bg);
+    }
+
+    /* User 1, 2 에 따른 활성화 버튼 색상 */
+    #user1-section .rating-btn.active {
+      background-color: var(--progress-fill-1);
+      color: white;
+      border-color: var(--progress-fill-1);
+    }
+    #user2-section .rating-btn.active {
+      background-color: var(--progress-fill-2);
+      color: white;
+      border-color: var(--progress-fill-2);
     }
 
     .task-input {
@@ -187,15 +283,13 @@
       background: transparent;
       outline: none;
       font-family: var(--font-family);
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-color);
+      margin-left: 2px;
     }
+    .task-input:focus { border-bottom: 1px solid #ccc; }
 
-    .task-input:focus {
-      border-bottom: 1px solid #ccc;
-    }
-
-    /* 체크 시 취소선 적용 클래스 */
+    /* 5점 만점 달성 시 취소선 적용 */
     .task-completed {
       text-decoration: line-through;
       color: var(--muted-text);
@@ -208,16 +302,10 @@
       color: #ccc;
       font-size: 16px;
       padding: 0 4px;
-      display: none; /* 평소엔 숨김 */
+      display: none;
     }
-
-    .task-item:hover .delete-btn {
-      display: block; /* 마우스 오버 시 표시 */
-    }
-    
-    .delete-btn:hover {
-      color: #e03e3e; /* 삭제 경고 색상 */
-    }
+    .task-item:hover .delete-btn { display: block; }
+    .delete-btn:hover { color: #e03e3e; }
 
     .week-footer {
       margin-top: auto;
@@ -227,139 +315,374 @@
 </head>
 <body>
 
-  <div class="container">
-    <div class="header">
-      <div class="main-goal">
-        🎯 <input type="text" placeholder="12주 동안 달성할 핵심 목표를 입력하세요" id="mainGoalInput">
+  <!-- 데이터 백업 및 복구 컨트롤 패널 -->
+  <div class="control-panel">
+    <button class="action-btn" onclick="exportToJson()">💾 Save Data (JSON)</button>
+    <button class="action-btn" onclick="triggerFileInput()">📂 Load Data (JSON)</button>
+    <!-- 숨겨진 파일 입력 필드 -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="importFromJson(event)">
+  </div>
+
+  <div class="split-container">
+    
+    <!-- 사용자 1 영역 -->
+    <div class="user-section" id="user1-section">
+      <div class="header">
+        <input type="text" class="user-name" id="name-user1" placeholder="👤 첫 번째 사용자 이름" oninput="saveData()">
+        <div class="main-goal">
+          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user1" oninput="saveData()">
+        </div>
+        <div>전체 진행률 (5점 만점 기준)</div>
+        <div class="progress-container">
+          <div class="progress-bar" id="totalProgressBar-user1"></div>
+        </div>
+        <div class="progress-text" id="totalProgressText-user1">0%</div>
       </div>
-      <div>전체 진행률</div>
-      <div class="progress-container">
-        <div class="progress-bar" id="totalProgressBar"></div>
-      </div>
-      <div class="progress-text" id="totalProgressText">0%</div>
+      <div class="weeks-grid" id="weeksContainer-user1"></div>
     </div>
 
-    <div class="weeks-grid" id="weeksContainer">
+    <!-- 사용자 2 영역 -->
+    <div class="user-section" id="user2-section">
+      <div class="header">
+        <input type="text" class="user-name" id="name-user2" placeholder="👤 두 번째 사용자 이름" oninput="saveData()">
+        <div class="main-goal">
+          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user2" oninput="saveData()">
+        </div>
+        <div>전체 진행률 (5점 만점 기준)</div>
+        <div class="progress-container">
+          <div class="progress-bar" id="totalProgressBar-user2"></div>
+        </div>
+        <div class="progress-text" id="totalProgressText-user2">0%</div>
       </div>
+      <div class="weeks-grid" id="weeksContainer-user2"></div>
+    </div>
+
   </div>
 
   <script>
     const totalWeeks = 12;
     const daysName = ['월', '화', '수', '목', '금', '토', '일'];
-    
-    const weeksContainer = document.getElementById('weeksContainer');
-    const totalProgressBar = document.getElementById('totalProgressBar');
-    const totalProgressText = document.getElementById('totalProgressText');
+    const users = ['user1', 'user2'];
+    const STORAGE_KEY = 'notion_12week_goal_duo_data';
 
-    // 1. 전체 진행률 업데이트
-    function updateTotalProgress() {
-      const allCheckboxes = document.querySelectorAll('.day-checkbox');
-      const checkedBoxes = document.querySelectorAll('.day-checkbox:checked');
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // 1. 데이터 저장 (localStorage)
+    function saveData() {
+      const data = {};
+
+      users.forEach(user => {
+        data[user] = {
+          name: document.getElementById(`name-${user}`).value,
+          mainGoal: document.getElementById(`mainGoal-${user}`).value,
+          weeks: []
+        };
+
+        for (let i = 1; i <= totalWeeks; i++) {
+          const weekCard = document.getElementById(`card-${user}-${i}`);
+          const weekGoal = weekCard ? weekCard.querySelector('.week-goal-input').value : '';
+          const daysData = [];
+
+          for (let j = 0; j < 7; j++) {
+            const taskList = document.getElementById(`task-list-${user}-${i}-${j}`);
+            const tasks = [];
+            if (taskList) {
+              const items = taskList.querySelectorAll('.task-item');
+              items.forEach(item => {
+                const score = parseInt(item.getAttribute('data-score') || '0', 10);
+                const input = item.querySelector('.task-input');
+                tasks.push({
+                  score: score,
+                  text: input ? input.value : ''
+                });
+              });
+            }
+            daysData.push(tasks);
+          }
+
+          data[user].weeks.push({
+            weekGoal: weekGoal,
+            days: daysData
+          });
+        }
+      });
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // 2. 전체 진행률 계산
+    function updateTotalProgress(user) {
+      const allTasks = document.querySelectorAll(`#${user}-section .task-item`);
+      
+      let totalScore = 0;
+      let maxScore = 0;
+
+      allTasks.forEach(item => {
+        totalScore += parseInt(item.getAttribute('data-score') || '0', 10);
+        maxScore += 5; // 항목 1개당 만점은 5점
+      });
       
       let totalPercent = 0;
-      if (allCheckboxes.length > 0) {
-        totalPercent = Math.round((checkedBoxes.length / allCheckboxes.length) * 100);
+      if (maxScore > 0) {
+        totalPercent = Math.round((totalScore / maxScore) * 100);
       }
       
-      totalProgressBar.style.width = `${totalPercent}%`;
-      totalProgressText.textContent = `${totalPercent}%`;
+      document.getElementById(`totalProgressBar-${user}`).style.width = `${totalPercent}%`;
+      document.getElementById(`totalProgressText-${user}`).textContent = `${totalPercent}%`;
     }
 
-    // 2. 주차별 진행률 업데이트 및 취소선 토글
-    function updateWeekProgress(weekIndex, checkboxElement) {
-      // 취소선 처리
-      if (checkboxElement) {
-        const textInput = checkboxElement.nextElementSibling;
-        if (checkboxElement.checked) {
-          textInput.classList.add('task-completed');
-        } else {
-          textInput.classList.remove('task-completed');
-        }
-      }
+    // 3. 주차별 진행률 계산 및 업데이트
+    function updateWeekProgress(user, weekIndex) {
+      const weekTasks = document.querySelectorAll(`#card-${user}-${weekIndex} .task-item`);
+      
+      let totalScore = 0;
+      let maxScore = 0;
 
-      // 진행률 계산
-      const weekCheckboxes = document.querySelectorAll(`.checkbox-week-${weekIndex}`);
-      const checkedWeekBoxes = document.querySelectorAll(`.checkbox-week-${weekIndex}:checked`);
+      weekTasks.forEach(item => {
+        totalScore += parseInt(item.getAttribute('data-score') || '0', 10);
+        maxScore += 5;
+      });
       
       let weekPercent = 0;
-      if (weekCheckboxes.length > 0) {
-        weekPercent = Math.round((checkedWeekBoxes.length / weekCheckboxes.length) * 100);
+      if (maxScore > 0) {
+        weekPercent = Math.round((totalScore / maxScore) * 100);
       }
       
-      document.getElementById(`weekProgressBar-${weekIndex}`).style.width = `${weekPercent}%`;
-      document.getElementById(`weekProgressText-${weekIndex}`).textContent = `${weekPercent}%`;
+      document.getElementById(`weekProgressBar-${user}-${weekIndex}`).style.width = `${weekPercent}%`;
+      document.getElementById(`weekProgressText-${user}-${weekIndex}`).textContent = `${weekPercent}%`;
       
-      updateTotalProgress();
+      updateTotalProgress(user);
     }
 
-    // 3. 새로운 세부 목표 추가 함수
-    function addTask(weekIndex, dayIndex) {
-      const taskList = document.getElementById(`task-list-${weekIndex}-${dayIndex}`);
+    // 4. 점수 설정 (버튼 클릭 시 호출)
+    function setRating(btnElement, user, weekIndex, selectedScore) {
+      const taskItem = btnElement.closest('.task-item');
+      const currentScore = parseInt(taskItem.getAttribute('data-score') || '0', 10);
+      
+      let newScore = selectedScore;
+      if (currentScore === selectedScore) {
+        newScore = 0;
+      }
+      
+      taskItem.setAttribute('data-score', newScore);
+      
+      const buttons = taskItem.querySelectorAll('.rating-btn');
+      buttons.forEach((b, index) => {
+        if (index < newScore) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      
+      const input = taskItem.querySelector('.task-input');
+      if (newScore === 5) {
+        input.classList.add('task-completed');
+      } else {
+        input.classList.remove('task-completed');
+      }
+      
+      updateWeekProgress(user, weekIndex);
+      saveData();
+    }
+
+    // 5. 새로운 세부 목표 추가 (사용자별)
+    function addTask(user, weekIndex, dayIndex) {
+      const taskList = document.getElementById(`task-list-${user}-${weekIndex}-${dayIndex}`);
       
       const taskItem = document.createElement('div');
       taskItem.className = 'task-item';
+      taskItem.setAttribute('data-score', '0');
+      
+      let ratingBtns = '';
+      for (let k = 1; k <= 5; k++) {
+        ratingBtns += `<button class="rating-btn" type="button" onclick="setRating(this, '${user}', ${weekIndex}, ${k})">${k}</button>`;
+      }
       
       taskItem.innerHTML = `
-        <input type="checkbox" class="day-checkbox checkbox-week-${weekIndex}" onchange="updateWeekProgress(${weekIndex}, this)">
-        <input type="text" class="task-input" placeholder="세부 목표 입력">
-        <button class="delete-btn" onclick="removeTask(this, ${weekIndex})" title="삭제">×</button>
+        <div class="rating-group">${ratingBtns}</div>
+        <input type="text" class="task-input" placeholder="세부 목표 입력" oninput="saveData()">
+        <button class="delete-btn" onclick="removeTask(this, '${user}', ${weekIndex})" title="삭제">×</button>
       `;
       
       taskList.appendChild(taskItem);
-      
-      // 모수가 늘어났으므로 진행률 재계산
-      updateWeekProgress(weekIndex, null);
+      updateWeekProgress(user, weekIndex);
+      saveData();
     }
 
-    // 4. 세부 목표 삭제 함수
-    function removeTask(buttonElement, weekIndex) {
+    // 6. 세부 목표 삭제
+    function removeTask(buttonElement, user, weekIndex) {
       const taskItem = buttonElement.parentElement;
       taskItem.remove();
-      
-      // 모수가 줄어들었으므로 진행률 재계산
-      updateWeekProgress(weekIndex, null);
+      updateWeekProgress(user, weekIndex);
+      saveData();
     }
 
-    // 초기 화면 생성 (12주 x 7일 세팅)
-    for (let i = 1; i <= totalWeeks; i++) {
-      const card = document.createElement('div');
-      card.className = 'week-card';
-      
-      let daysHtml = '';
-      for (let j = 0; j < daysName.length; j++) {
-        daysHtml += `
-          <div class="day-section">
-            <div class="day-header">
-              <span>${daysName[j]}요일</span>
-              <button class="add-btn" onclick="addTask(${i}, ${j})" title="목표 추가">+</button>
-            </div>
-            <div class="task-list" id="task-list-${i}-${j}">
-              <div class="task-item">
-                <input type="checkbox" class="day-checkbox checkbox-week-${i}" onchange="updateWeekProgress(${i}, this)">
-                <input type="text" class="task-input" placeholder="세부 목표 입력">
-                <button class="delete-btn" onclick="removeTask(this, ${i})" title="삭제">×</button>
-              </div>
-            </div>
-          </div>
-        `;
+    // 7. 데이터 불러오기 및 UI 렌더링
+    function initTracker() {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      let parsedData = null;
+
+      if (savedData) {
+        try {
+          parsedData = JSON.parse(savedData);
+        } catch(e) {
+          console.error("데이터 파싱 오류");
+        }
       }
 
-      card.innerHTML = `
-        <div class="week-header">${i}주차</div>
-        <input type="text" class="week-goal-input" placeholder="${i}주차 핵심 목표 입력">
+      users.forEach(user => {
+        let userData = parsedData ? parsedData[user] : null;
+
+        // 저장된 데이터가 없으면 기본 구조 생성
+        if (!userData) {
+          userData = {
+            name: '',
+            mainGoal: '',
+            weeks: Array.from({ length: totalWeeks }, () => ({
+              weekGoal: '',
+              days: Array.from({ length: 7 }, () => [{ score: 0, text: '' }])
+            }))
+          };
+        }
+
+        document.getElementById(`name-${user}`).value = userData.name || '';
+        document.getElementById(`mainGoal-${user}`).value = userData.mainGoal || '';
         
-        <div>${daysHtml}</div>
-        
-        <div class="week-footer">
-          <div class="progress-container" style="height: 6px; margin-top: 0;">
-            <div class="progress-bar" id="weekProgressBar-${i}"></div>
-          </div>
-          <div class="progress-text" id="weekProgressText-${i}" style="font-size: 11px;">0%</div>
-        </div>
-      `;
-      
-      weeksContainer.appendChild(card);
+        const weeksContainer = document.getElementById(`weeksContainer-${user}`);
+        weeksContainer.innerHTML = '';
+
+        userData.weeks.forEach((week, wIndex) => {
+          const weekNum = wIndex + 1;
+          const card = document.createElement('div');
+          card.className = 'week-card';
+          card.id = `card-${user}-${weekNum}`;
+
+          let daysHtml = '';
+          week.days.forEach((dayTasks, dIndex) => {
+            let tasksHtml = '';
+            dayTasks.forEach(task => {
+              let score = task.score !== undefined ? task.score : (task.checked ? 5 : 0);
+              const completedClass = score === 5 ? 'task-completed' : '';
+              
+              let ratingBtns = '';
+              for (let k = 1; k <= 5; k++) {
+                const activeClass = k <= score ? 'active' : '';
+                ratingBtns += `<button class="rating-btn ${activeClass}" type="button" onclick="setRating(this, '${user}', ${weekNum}, ${k})">${k}</button>`;
+              }
+
+              tasksHtml += `
+                <div class="task-item" data-score="${score}">
+                  <div class="rating-group">${ratingBtns}</div>
+                  <input type="text" class="task-input ${completedClass}" value="${escapeHtml(task.text)}" placeholder="세부 목표 입력" oninput="saveData()">
+                  <button class="delete-btn" onclick="removeTask(this, '${user}', ${weekNum})" title="삭제">×</button>
+                </div>
+              `;
+            });
+
+            daysHtml += `
+              <div class="day-section">
+                <div class="day-header">
+                  <span>${daysName[dIndex]}요일</span>
+                  <button class="add-btn" onclick="addTask('${user}', ${weekNum}, ${dIndex})" title="목표 추가">+</button>
+                </div>
+                <div class="task-list" id="task-list-${user}-${weekNum}-${dIndex}">
+                  ${tasksHtml}
+                </div>
+              </div>
+            `;
+          });
+
+          card.innerHTML = `
+            <div class="week-header">${weekNum}주차</div>
+            <input type="text" class="week-goal-input" value="${escapeHtml(week.weekGoal || '')}" placeholder="${weekNum}주차 목표 입력" oninput="saveData()">
+            
+            <div>${daysHtml}</div>
+            
+            <div class="week-footer">
+              <div class="progress-container" style="height: 6px; margin-top: 0;">
+                <div class="progress-bar" id="weekProgressBar-${user}-${weekNum}"></div>
+              </div>
+              <div class="progress-text" id="weekProgressText-${user}-${weekNum}" style="font-size: 11px;">0%</div>
+            </div>
+          `;
+
+          weeksContainer.appendChild(card);
+          updateWeekProgress(user, weekNum);
+        });
+
+        updateTotalProgress(user);
+      });
     }
+
+    // 💡 [추가된 기능] 8. JSON 파일로 내보내기 (Save)
+    function exportToJson() {
+      // 내보내기 전에 현재 상태를 확실히 저장
+      saveData(); 
+      const dataStr = localStorage.getItem(STORAGE_KEY);
+      
+      if (!dataStr) {
+        alert("저장할 데이터가 없습니다.");
+        return;
+      }
+
+      // 텍스트(JSON)를 Blob 객체로 변환
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      
+      // 임시 a 태그를 만들어 강제 클릭 이벤트를 발생시켜 다운로드 처리
+      const a = document.createElement('a');
+      a.href = url;
+      // 다운로드될 기본 파일명 지정
+      a.download = `12week_goal_tracker_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // 메모리 정리
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // 💡 [추가된 기능] 9. 숨겨진 파일 인풋 클릭 트리거 (Load 버튼 클릭 시)
+    function triggerFileInput() {
+      document.getElementById('fileInput').click();
+    }
+
+    // 💡 [추가된 기능] 10. JSON 파일 불러와서 적용하기 (Load)
+    function importFromJson(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const contents = e.target.result;
+          
+          // JSON 포맷이 올바른지 테스트 파싱
+          JSON.parse(contents); 
+
+          // 로컬 스토리지 덮어쓰기
+          localStorage.setItem(STORAGE_KEY, contents);
+          
+          // 화면 리렌더링
+          initTracker();
+          alert("데이터를 성공적으로 불러왔습니다!");
+        } catch (error) {
+          alert("유효하지 않은 JSON 파일입니다. 올바른 백업 파일을 선택해주세요.");
+        }
+      };
+      
+      // 파일 내용을 텍스트로 읽기 시작
+      reader.readAsText(file);
+      
+      // 동일한 파일을 다시 선택할 수 있도록 input 초기화
+      event.target.value = ''; 
+    }
+
+    // 초기 실행
+    window.onload = initTracker;
   </script>
 
 </body>
