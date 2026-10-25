@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>12주 세부 목표 트래커 (1~5 수준 평가 듀오)</title>
+  <title>12주 세부 목표 트래커 (멀티 페이지 지원)</title>
   <style>
     /* ☀️ 기본 (라이트 모드) 컬러 변수 */
     :root {
@@ -12,10 +12,11 @@
       --muted-text: #787774;
       --border-color: #e9e9e7;
       --progress-bg: #e9e9e7;
-      --progress-fill-1: #2eaadc; /* User 1 포인트 컬러 */
-      --progress-fill-2: #e03e3e; /* User 2 포인트 컬러 */
+      --progress-fill-1: #2eaadc;
+      --progress-fill-2: #e03e3e;
       --card-bg: #f7f7f5;
       --hover-bg: #efefed;
+      --tab-active-bg: #ffffff;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
     }
 
@@ -28,7 +29,8 @@
       --progress-bg: #373c3f;
       --card-bg: #202020;
       --hover-bg: #2f3437;
-      --progress-fill-1: #45b3e0; /* 다크모드에서 살짝 더 밝게 */
+      --tab-active-bg: #2c2c2c;
+      --progress-fill-1: #45b3e0;
       --progress-fill-2: #e85a5a;
     }
 
@@ -42,24 +44,79 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* 🎯 컨트롤 패널 */
-    .control-panel {
+    /* 🎯 컨트롤 패널 & 페이지 탭 */
+    .top-container {
       max-width: 1600px;
       margin: 0 auto 20px auto;
-      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .control-panel {
+      padding: 12px 15px;
       background-color: var(--card-bg);
       border-radius: 8px;
       border: 1px solid var(--border-color);
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
       gap: 10px;
-      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .page-tabs-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      max-width: 100%;
+    }
+
+    .page-tab {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background-color: var(--bg-color);
+      color: var(--muted-text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .page-tab:hover {
+      background-color: var(--hover-bg);
+      color: var(--text-color);
+    }
+
+    .page-tab.active {
+      background-color: var(--tab-active-bg);
+      color: var(--text-color);
+      border-color: var(--muted-text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .tab-rename-input {
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: inherit;
+      outline: none;
+      width: 110px;
     }
 
     .action-btn {
-      padding: 8px 16px;
+      padding: 8px 14px;
       font-family: var(--font-family);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       border: 1px solid var(--border-color);
@@ -108,7 +165,7 @@
 
     /* 상단 영역 */
     .header {
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       padding-bottom: 20px;
       border-bottom: 1px solid var(--border-color);
     }
@@ -129,13 +186,44 @@
       margin-bottom: 10px;
     }
 
+    .date-picker-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .date-picker-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted-text);
+    }
+
+    .start-date-input {
+      font-family: var(--font-family);
+      font-size: 13px;
+      padding: 4px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      outline: none;
+    }
+
+    .period-display {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted-text);
+    }
+
     .main-goal {
       font-size: 24px;
       font-weight: bold;
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .main-goal input {
@@ -152,6 +240,126 @@
 
     #user1-section .main-goal input:focus { border-bottom: 2px solid var(--progress-fill-1); }
     #user2-section .main-goal input:focus { border-bottom: 2px solid var(--progress-fill-2); }
+
+    .note-input {
+      font-family: var(--font-family);
+      color: var(--text-color);
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px 10px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease, background-color 0.3s ease;
+      resize: vertical;
+    }
+
+    .note-input:focus {
+      border-color: var(--muted-text);
+    }
+
+    .main-note-input {
+      width: 100%;
+      min-height: 52px;
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+
+    .week-note-input {
+      width: 100%;
+      min-height: 48px;
+      font-size: 12px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .day-note-input {
+      width: 100%;
+      font-size: 11px;
+      padding: 4px 6px;
+      margin-top: 6px;
+      border-style: dashed;
+      background-color: transparent;
+    }
+
+    /* ⚡ 실행 계획 표 스타일 */
+    .action-plan-section {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 25px;
+    }
+
+    .action-plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .action-plan-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-plan-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .action-plan-table th, .action-plan-table td {
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      text-align: left;
+    }
+
+    .action-plan-table th {
+      background-color: var(--bg-color);
+      color: var(--muted-text);
+      font-weight: 600;
+    }
+
+    .day-pill {
+      padding: 3px 7px;
+      font-size: 11px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--muted-text);
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    #user1-section .day-pill.active {
+      background-color: var(--progress-fill-1);
+      color: white;
+      border-color: var(--progress-fill-1);
+    }
+    #user2-section .day-pill.active {
+      background-color: var(--progress-fill-2);
+      color: white;
+      border-color: var(--progress-fill-2);
+    }
+
+    .btn-sync-user1 {
+      background-color: var(--progress-fill-1) !important;
+      color: white !important;
+      border: none !important;
+    }
+    .btn-sync-user2 {
+      background-color: var(--progress-fill-2) !important;
+      color: white !important;
+      border: none !important;
+    }
 
     .progress-container {
       width: 100%;
@@ -199,7 +407,16 @@
     .week-header {
       font-weight: bold;
       margin-bottom: 10px;
-      font-size: 16px;
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .week-period {
+      font-size: 11px;
+      font-weight: normal;
+      color: var(--muted-text);
     }
 
     .week-goal-input {
@@ -209,7 +426,7 @@
       border-bottom: 1px solid var(--border-color);
       font-family: var(--font-family);
       font-size: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       padding-bottom: 5px;
       outline: none;
     }
@@ -218,6 +435,9 @@
     /* 요일별 섹션 */
     .day-section {
       margin-bottom: 15px;
+      background: rgba(0,0,0,0.01);
+      padding: 6px;
+      border-radius: 6px;
     }
 
     .day-header {
@@ -244,21 +464,49 @@
     }
     .add-btn:hover { background-color: var(--hover-bg); color: var(--text-color); }
 
-    /* 세부 목표 리스트 */
+    /* 세부 목표 리스트 & 드래그 앤 드롭 스타일 */
     .task-list {
       display: flex;
       flex-direction: column;
       gap: 6px;
+      min-height: 10px;
     }
 
     .task-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 2px 0;
+      gap: 6px;
+      padding: 4px 2px;
+      background-color: transparent;
+      border-radius: 4px;
+      transition: background-color 0.15s ease;
     }
 
-    /* 1~5 수준 평가 버튼 그룹 */
+    .task-item.dragging {
+      opacity: 0.4;
+      background-color: var(--hover-bg);
+      border: 1px dashed var(--muted-text);
+    }
+
+    .drag-handle {
+      cursor: grab;
+      color: var(--muted-text);
+      font-size: 13px;
+      user-select: none;
+      padding: 0 2px;
+      display: flex;
+      align-items: center;
+      opacity: 0.5;
+    }
+
+    .task-item:hover .drag-handle {
+      opacity: 1;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
     .rating-group {
       display: flex;
       gap: 3px;
@@ -285,10 +533,8 @@
       background-color: var(--hover-bg);
     }
     
-    /* 다크모드에서 버튼 테두리 보정 */
     body.dark-mode .rating-btn { border-color: #555; }
 
-    /* User 1, 2 에 따른 활성화 버튼 색상 */
     #user1-section .rating-btn.active {
       background-color: var(--progress-fill-1);
       color: white;
@@ -311,12 +557,6 @@
     }
     .task-input:focus { border-bottom: 1px solid var(--muted-text); }
 
-    /* 5점 만점 달성 시 취소선 적용 */
-    .task-completed {
-      text-decoration: line-through;
-      color: var(--muted-text);
-    }
-
     .delete-btn {
       background: none;
       border: none;
@@ -331,51 +571,144 @@
 
     .week-footer {
       margin-top: auto;
-      padding-top: 15px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-color);
     }
   </style>
 </head>
 <body>
 
-  <!-- 데이터 백업 및 복구 컨트롤 패널 -->
-  <div class="control-panel">
-    <button class="action-btn" id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
-    <button class="action-btn" onclick="exportToJson()">💾 Save Data (JSON)</button>
-    <button class="action-btn" onclick="triggerFileInput()">📂 Load Data (JSON)</button>
-    <!-- 숨겨진 파일 입력 필드 -->
-    <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="importFromJson(event)">
+  <!-- 컨트롤 패널 & 페이지 탭 -->
+  <div class="top-container">
+    <div class="control-panel">
+      <!-- 페이지 탭 전환 바 -->
+      <div class="page-tabs-bar" id="pageTabsContainer"></div>
+
+      <!-- 자동 저장 및 수동 세이브/로드 버튼 그룹 -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="action-btn" onclick="exportJsonData()">💾 JSON 다운로드</button>
+        <button class="action-btn" onclick="document.getElementById('jsonFileInput').click()">📂 JSON 파일 로드</button>
+        <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="importJsonData(event)">
+        <button class="action-btn" onclick="clearLocalStorage()" style="color: #e85a5a; border-color: #e85a5a;">🧹 로컬 데이터 초기화</button>
+        <button class="action-btn" id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
+      </div>
+    </div>
   </div>
 
   <div class="split-container">
     <!-- 사용자 1 영역 -->
     <div class="user-section" id="user1-section">
       <div class="header">
-        <input type="text" class="user-name" id="name-user1" placeholder="👤 첫 번째 사용자 이름" oninput="saveData()">
+        <input type="text" class="user-name" id="name-user1" placeholder="👤 첫 번째 사용자 이름" oninput="autoSaveData()">
         <div class="main-goal">
-          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user1" oninput="saveData()">
+          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user1" oninput="autoSaveData()">
         </div>
+
+        <textarea class="note-input main-note-input" id="mainNote-user1" placeholder="📝 12주 전체 목표 총평 및 비고" oninput="autoSaveData()"></textarea>
+
+        <div class="date-picker-container">
+          <span class="date-picker-label">📅 시작일:</span>
+          <input type="date" id="startDate-user1" class="start-date-input" onchange="handleDateChange('user1')">
+          <span class="period-display" id="periodText-user1"></span>
+        </div>
+
         <div>전체 진행률 (5점 만점 기준)</div>
         <div class="progress-container">
           <div class="progress-bar" id="totalProgressBar-user1"></div>
         </div>
         <div class="progress-text" id="totalProgressText-user1">0%</div>
       </div>
+
+      <!-- ⚡ 실행 계획 설정 표 (User 1) -->
+      <div class="action-plan-section">
+        <div class="action-plan-header">
+          <div class="action-plan-title">⚡ 실행 전략 표 (체크리스트 자동 생성)</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+            <button class="action-btn" style="font-size: 12px; padding: 4px 10px;" onclick="addActionPlanRow('user1', null, false)">+ 목표 추가</button>
+            <button class="action-btn" style="font-size: 12px; padding: 4px 10px;" onclick="clearAutoTasks('user1')">🧹 자동 생성 항목 초기화</button>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted-text); font-weight: 600;">
+            <span>⏱️ 적용 시작 시점:</span>
+            <select id="syncStartWeek-user1" class="start-date-input" style="font-size: 12px; padding: 2px 6px;" onchange="autoSaveData()"></select>
+            <select id="syncStartDay-user1" class="start-date-input" style="font-size: 12px; padding: 2px 6px;" onchange="autoSaveData()"></select>
+            <span>부터 적용</span>
+          </div>
+          <button class="action-btn btn-sync-user1" style="font-size: 12px; padding: 5px 12px;" onclick="syncActionPlans('user1')">🔄 변경사항 반영 (재동기화)</button>
+        </div>
+
+        <table class="action-plan-table">
+          <thead>
+            <tr>
+              <th style="width: 45%;">실행 목표</th>
+              <th style="width: 45%;">반복 주기 / 요일</th>
+              <th style="width: 10%; text-align: center;">삭제</th>
+            </tr>
+          </thead>
+          <tbody id="actionPlanBody-user1"></tbody>
+        </table>
+      </div>
+
       <div class="weeks-grid" id="weeksContainer-user1"></div>
     </div>
 
     <!-- 사용자 2 영역 -->
     <div class="user-section" id="user2-section">
       <div class="header">
-        <input type="text" class="user-name" id="name-user2" placeholder="👤 두 번째 사용자 이름" oninput="saveData()">
+        <input type="text" class="user-name" id="name-user2" placeholder="👤 두 번째 사용자 이름" oninput="autoSaveData()">
         <div class="main-goal">
-          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user2" oninput="saveData()">
+          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user2" oninput="autoSaveData()">
         </div>
+
+        <textarea class="note-input main-note-input" id="mainNote-user2" placeholder="📝 12주 전체 목표 총평 및 비고" oninput="autoSaveData()"></textarea>
+
+        <div class="date-picker-container">
+          <span class="date-picker-label">📅 시작일:</span>
+          <input type="date" id="startDate-user2" class="start-date-input" onchange="handleDateChange('user2')">
+          <span class="period-display" id="periodText-user2"></span>
+        </div>
+
         <div>전체 진행률 (5점 만점 기준)</div>
         <div class="progress-container">
           <div class="progress-bar" id="totalProgressBar-user2"></div>
         </div>
         <div class="progress-text" id="totalProgressText-user2">0%</div>
       </div>
+
+      <!-- ⚡ 실행 계획 설정 표 (User 2) -->
+      <div class="action-plan-section">
+        <div class="action-plan-header">
+          <div class="action-plan-title">⚡ 실행 전략 표 (체크리스트 자동 생성)</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+            <button class="action-btn" style="font-size: 12px; padding: 4px 10px;" onclick="addActionPlanRow('user2', null, false)">+ 목표 추가</button>
+            <button class="action-btn" style="font-size: 12px; padding: 4px 10px;" onclick="clearAutoTasks('user2')">🧹 자동 생성 항목 초기화</button>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted-text); font-weight: 600;">
+            <span>⏱️ 적용 시작 시점:</span>
+            <select id="syncStartWeek-user2" class="start-date-input" style="font-size: 12px; padding: 2px 6px;" onchange="autoSaveData()"></select>
+            <select id="syncStartDay-user2" class="start-date-input" style="font-size: 12px; padding: 2px 6px;" onchange="autoSaveData()"></select>
+            <span>부터 적용</span>
+          </div>
+          <button class="action-btn btn-sync-user2" style="font-size: 12px; padding: 5px 12px;" onclick="syncActionPlans('user2')">🔄 변경사항 반영 (재동기화)</button>
+        </div>
+
+        <table class="action-plan-table">
+          <thead>
+            <tr>
+              <th style="width: 45%;">실행 목표</th>
+              <th style="width: 45%;">반복 주기 / 요일</th>
+              <th style="width: 10%; text-align: center;">삭제</th>
+            </tr>
+          </thead>
+          <tbody id="actionPlanBody-user2"></tbody>
+        </table>
+      </div>
+
       <div class="weeks-grid" id="weeksContainer-user2"></div>
     </div>
   </div>
@@ -384,288 +717,785 @@
     const totalWeeks = 12;
     const daysName = ['월', '화', '수', '목', '금', '토', '일'];
     const users = ['user1', 'user2'];
-    const STORAGE_KEY = 'notion_12week_goal_duo_data';
-    const THEME_KEY = 'notion_12week_theme';
+    const STORAGE_KEY = '12week_tracker_autoresume_data';
+
+    // 전역 애플리케이션 상태
+    let appState = {
+      activePageIndex: 0,
+      pages: []
+    };
+
+    let saveTimeout = null;
 
     function escapeHtml(str) {
       return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // 💡 [추가] 다크 모드 토글 함수
-    function toggleTheme() {
-      const body = document.body;
-      const isDark = body.classList.toggle('dark-mode');
-      const themeBtn = document.getElementById('themeToggleBtn');
-
-      if (isDark) {
-        themeBtn.textContent = '☀️ 라이트 모드';
-        localStorage.setItem(THEME_KEY, 'dark');
-      } else {
-        themeBtn.textContent = '🌙 다크 모드';
-        localStorage.setItem(THEME_KEY, 'light');
-      }
+    function formatDateFull(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}년 ${m}월 ${d}일`;
     }
 
-    // 💡 [추가] 초기 로드 시 다크 모드 상태 확인
-    function initTheme() {
-      const savedTheme = localStorage.getItem(THEME_KEY);
-      if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('themeToggleBtn').textContent = '☀️ 라이트 모드';
-      }
+    function formatDateShort(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}.${m}.${d}`;
     }
 
-    // 1. 데이터 저장 (localStorage)
-    function saveData() {
-      const data = {};
+    function formatDateDay(date) {
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${m}/${d}`;
+    }
+
+    function createBlankUserData() {
+      const weeks = [];
+      for (let w = 1; w <= totalWeeks; w++) {
+        const days = [];
+        for (let d = 0; d < 7; d++) {
+          days.push({ note: '', tasks: [] });
+        }
+        weeks.push({ weekGoal: '', weekNote: '', days });
+      }
+      return {
+        name: '',
+        mainGoal: '',
+        mainNote: '',
+        startDate: '',
+        syncStartWeek: '1',
+        syncStartDay: '0',
+        actionPlans: [],
+        weeks: weeks
+      };
+    }
+
+    function createNewPageObject(title) {
+      return {
+        id: 'page_' + Date.now(),
+        title: title || '12주 목표',
+        user1: createBlankUserData(),
+        user2: createBlankUserData()
+      };
+    }
+
+    /* --- DOM 뼈대 생성 --- */
+    function buildGridHTML() {
       users.forEach(user => {
-        data[user] = {
-          name: document.getElementById(`name-${user}`).value,
-          mainGoal: document.getElementById(`mainGoal-${user}`).value,
-          weeks: []
-        };
+        const container = document.getElementById(`weeksContainer-${user}`);
+        container.innerHTML = '';
 
+        for (let i = 1; i <= totalWeeks; i++) {
+          const weekCard = document.createElement('div');
+          weekCard.className = 'week-card';
+          weekCard.id = `card-${user}-${i}`;
+
+          let daysHtml = '';
+          for (let j = 0; j < 7; j++) {
+            daysHtml += `
+              <div class="day-section">
+                <div class="day-header">
+                  <span id="dayLabel-${user}-${i}-${j}">${daysName[j]}요일</span>
+                  <button class="add-btn" onclick="addTaskItem('${user}', ${i}, ${j})" title="세부 목표 추가">+</button>
+                </div>
+                <div class="task-list" id="task-list-${user}-${i}-${j}"></div>
+                <input type="text" class="note-input day-note-input" id="dayNote-${user}-${i}-${j}" placeholder="✏️ 일일 메모" oninput="autoSaveData()">
+              </div>
+            `;
+          }
+
+          weekCard.innerHTML = `
+            <div class="week-header">
+              <span>${i}주차</span>
+              <span class="week-period" id="weekPeriod-${user}-${i}"></span>
+            </div>
+            <input type="text" class="week-goal-input" placeholder="${i}주차 목표" oninput="autoSaveData()">
+            ${daysHtml}
+            <div class="week-footer">
+              <textarea class="note-input week-note-input" placeholder="📝 ${i}주차 메모 / 성과 피드백" oninput="autoSaveData()"></textarea>
+            </div>
+          `;
+          container.appendChild(weekCard);
+        }
+      });
+      populateSyncSelectors();
+    }
+
+    function populateSyncSelectors() {
+      users.forEach(user => {
+        const weekSel = document.getElementById(`syncStartWeek-${user}`);
+        const daySel = document.getElementById(`syncStartDay-${user}`);
+
+        if (weekSel && weekSel.options.length === 0) {
+          for (let w = 1; w <= totalWeeks; w++) {
+            const opt = document.createElement('option');
+            opt.value = w;
+            opt.textContent = `${w}주차`;
+            weekSel.appendChild(opt);
+          }
+        }
+
+        if (daySel && daySel.options.length === 0) {
+          daysName.forEach((day, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = `${day}요일`;
+            daySel.appendChild(opt);
+          });
+        }
+      });
+    }
+
+    /* --- 페이지/탭 관리 시스템 --- */
+    function renderPageTabs() {
+      const container = document.getElementById('pageTabsContainer');
+      container.innerHTML = '';
+
+      appState.pages.forEach((page, idx) => {
+        const isActive = idx === appState.activePageIndex;
+        const tab = document.createElement('div');
+        tab.className = `page-tab ${isActive ? 'active' : ''}`;
+        
+        tab.innerHTML = `
+          📌 <input type="text" class="tab-rename-input" value="${escapeHtml(page.title)}" onchange="renamePage(${idx}, this.value)" onclick="event.stopPropagation()">
+          ${appState.pages.length > 1 ? `<span style="cursor:pointer; opacity:0.6; padding:0 2px;" onclick="deletePage(${idx}, event)" title="페이지 삭제">×</span>` : ''}
+        `;
+
+        tab.onclick = () => switchPage(idx);
+        container.appendChild(tab);
+      });
+
+      const addBtn = document.createElement('button');
+      addBtn.className = 'action-btn';
+      addBtn.style.padding = '5px 10px';
+      addBtn.style.fontSize = '12px';
+      addBtn.innerHTML = '+ 새 목표 페이지';
+      addBtn.onclick = addNewPage;
+      container.appendChild(addBtn);
+    }
+
+    function switchPage(index) {
+      if (index === appState.activePageIndex) return;
+      saveDataToMemory();
+      appState.activePageIndex = index;
+      renderPageTabs();
+      loadActivePageToDOM();
+      autoSaveData();
+    }
+
+    function addNewPage() {
+      saveDataToMemory();
+      const newIndex = appState.pages.length;
+      const newPage = createNewPageObject(`12주 목표 #${newIndex + 1}`);
+      appState.pages.push(newPage);
+      appState.activePageIndex = newIndex;
+      renderPageTabs();
+      loadActivePageToDOM();
+      autoSaveData();
+    }
+
+    function renamePage(index, newTitle) {
+      if (!newTitle.trim()) return;
+      appState.pages[index].title = newTitle.trim();
+      renderPageTabs();
+      autoSaveData();
+    }
+
+    function deletePage(index, event) {
+      event.stopPropagation();
+      if (appState.pages.length <= 1) {
+        alert('최소 하나의 목표 페이지는 유지되어야 합니다.');
+        return;
+      }
+
+      if (confirm(`'${appState.pages[index].title}' 페이지를 삭제하시겠습니까?`)) {
+        appState.pages.splice(index, 1);
+        if (appState.activePageIndex >= appState.pages.length) {
+          appState.activePageIndex = appState.pages.length - 1;
+        }
+        renderPageTabs();
+        loadActivePageToDOM();
+        autoSaveData();
+      }
+    }
+
+    /* --- 날짜 및 진행률 업데이트 --- */
+    function updateAllDates(user) {
+      const startDateVal = document.getElementById(`startDate-${user}`).value;
+      const periodText = document.getElementById(`periodText-${user}`);
+      
+      if (!startDateVal) {
+        periodText.textContent = '';
+        for (let i = 1; i <= totalWeeks; i++) {
+          const weekPeriodEl = document.getElementById(`weekPeriod-${user}-${i}`);
+          if (weekPeriodEl) weekPeriodEl.textContent = '';
+          for (let j = 0; j < 7; j++) {
+            const dayLabelEl = document.getElementById(`dayLabel-${user}-${i}-${j}`);
+            if (dayLabelEl) dayLabelEl.textContent = `${daysName[j]}요일`;
+          }
+        }
+        return;
+      }
+
+      const [year, month, day] = startDateVal.split('-').map(Number);
+      const startDate = new Date(year, month - 1, day);
+
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + (12 * 7 - 1));
+
+      periodText.textContent = `(${formatDateFull(startDate)} ~ ${formatDateFull(endDate)})`;
+
+      for (let i = 1; i <= totalWeeks; i++) {
+        const weekStart = new Date(startDate);
+        weekStart.setDate(startDate.getDate() + (i - 1) * 7);
+
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+
+        const weekPeriodEl = document.getElementById(`weekPeriod-${user}-${i}`);
+        if (weekPeriodEl) {
+          weekPeriodEl.textContent = `${formatDateShort(weekStart)} ~ ${formatDateShort(weekEnd)}`;
+        }
+
+        for (let j = 0; j < 7; j++) {
+          const dayDate = new Date(weekStart);
+          dayDate.setDate(weekStart.getDate() + j);
+
+          const dayLabelEl = document.getElementById(`dayLabel-${user}-${i}-${j}`);
+          if (dayLabelEl) {
+            dayLabelEl.textContent = `${daysName[j]} (${formatDateDay(dayDate)})`;
+          }
+        }
+      }
+    }
+
+    function handleDateChange(user) {
+      updateAllDates(user);
+      autoSaveData();
+    }
+
+    function calculateProgress(user) {
+      let totalScore = 0;
+      let totalTasks = 0;
+
+      for (let i = 1; i <= totalWeeks; i++) {
+        for (let j = 0; j < 7; j++) {
+          const taskList = document.getElementById(`task-list-${user}-${i}-${j}`);
+          if (taskList) {
+            const items = taskList.querySelectorAll('.task-item');
+            items.forEach(item => {
+              const score = parseInt(item.getAttribute('data-score') || '0', 10);
+              if (score > 0) {
+                totalScore += score;
+              }
+              totalTasks += 1;
+            });
+          }
+        }
+      }
+
+      const progressBar = document.getElementById(`totalProgressBar-${user}`);
+      const progressText = document.getElementById(`totalProgressText-${user}`);
+
+      if (totalTasks === 0) {
+        progressBar.style.width = '0%';
+        progressText.textContent = '0%';
+        return;
+      }
+
+      const maxPossibleScore = totalTasks * 5;
+      const percentage = Math.round((totalScore / maxPossibleScore) * 100);
+
+      progressBar.style.width = `${percentage}%`;
+      progressText.textContent = `${percentage}% (${totalScore} / ${maxPossibleScore}점)`;
+    }
+
+    /* --- 세부 목표 항목 UI & 드래그 앤 드롭 --- */
+    function addTaskItem(user, week, day, taskData = { score: 0, text: '', isAuto: false }) {
+      const taskList = document.getElementById(`task-list-${user}-${week}-${day}`);
+      if (!taskList) return;
+
+      const item = document.createElement('div');
+      item.className = 'task-item';
+      item.setAttribute('draggable', 'true');
+      item.setAttribute('data-score', taskData.score);
+      item.setAttribute('data-auto', taskData.isAuto ? 'true' : 'false');
+
+      let ratingBtnsHtml = '';
+      for (let s = 1; s <= 5; s++) {
+        const activeClass = taskData.score === s ? 'active' : '';
+        ratingBtnsHtml += `<button type="button" class="rating-btn ${activeClass}" onclick="setTaskScore(this, ${s}, '${user}')">${s}</button>`;
+      }
+
+      item.innerHTML = `
+        <div class="drag-handle" title="순서 이동">⋮⋮</div>
+        <div class="rating-group">${ratingBtnsHtml}</div>
+        <input type="text" class="task-input" value="${escapeHtml(taskData.text)}" placeholder="목표 입력" oninput="autoSaveData()">
+        <button type="button" class="delete-btn" onclick="removeTaskItem(this, '${user}')" title="삭제">×</button>
+      `;
+
+      item.addEventListener('dragstart', handleDragStart);
+      item.addEventListener('dragend', handleDragEnd);
+
+      taskList.appendChild(item);
+      initDragContainer(taskList, user);
+      calculateProgress(user);
+      autoSaveData();
+    }
+
+    function setTaskScore(btn, score, user) {
+      const item = btn.closest('.task-item');
+      const currentScore = parseInt(item.getAttribute('data-score') || '0', 10);
+
+      const btns = item.querySelectorAll('.rating-btn');
+      btns.forEach(b => b.classList.remove('active'));
+
+      if (currentScore === score) {
+        item.setAttribute('data-score', '0');
+      } else {
+        item.setAttribute('data-score', score);
+        btn.classList.add('active');
+      }
+
+      calculateProgress(user);
+      autoSaveData();
+    }
+
+    function removeTaskItem(btn, user) {
+      const item = btn.closest('.task-item');
+      item.remove();
+      calculateProgress(user);
+      autoSaveData();
+    }
+
+    let draggedItem = null;
+
+    function handleDragStart(e) {
+      draggedItem = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd() {
+      this.classList.remove('dragging');
+      draggedItem = null;
+      autoSaveData();
+    }
+
+    function initDragContainer(container, user) {
+      container.addEventListener('dragover', e => {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(container, e.clientY);
+        if (draggedItem) {
+          if (afterElement == null) {
+            container.appendChild(draggedItem);
+          } else {
+            container.insertBefore(draggedItem, afterElement);
+          }
+        }
+      });
+    }
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.task-item:not(.dragging)')];
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    /* --- ⚡ 실행 계획 표 UI 관리 --- */
+    function toggleDaySelector(selectEl) {
+      const row = selectEl.closest('tr');
+      const dayPillsGroup = row.querySelector('.day-pills');
+      if (dayPillsGroup) {
+        dayPillsGroup.style.display = (selectEl.value === 'custom') ? 'flex' : 'none';
+      }
+      autoSaveData();
+    }
+
+    function toggleDayPill(btn) {
+      btn.classList.toggle('active');
+      autoSaveData();
+    }
+
+    function addActionPlanRow(user, data = null, skipSave = false) {
+      const tbody = document.getElementById(`actionPlanBody-${user}`);
+      const tr = document.createElement('tr');
+      
+      const textVal = data ? data.text : '';
+      const typeVal = data ? data.type : 'daily';
+      const activeDays = data ? (data.days || []) : [0, 1, 2, 3, 4, 5, 6];
+
+      let dayPillsHtml = '';
+      daysName.forEach((day, idx) => {
+        const isActive = activeDays.includes(idx) ? 'active' : '';
+        dayPillsHtml += `<button type="button" class="day-pill ${isActive}" data-day="${idx}" onclick="toggleDayPill(this)">${day}</button>`;
+      });
+
+      tr.innerHTML = `
+        <td>
+          <input type="text" class="task-input action-plan-text" value="${escapeHtml(textVal)}" placeholder="예: 매일 30분 운동하기" oninput="autoSaveData()">
+        </td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <select class="start-date-input action-plan-type" onchange="toggleDaySelector(this)">
+              <option value="daily" ${typeVal === 'daily' ? 'selected' : ''}>매일</option>
+              <option value="everyOther" ${typeVal === 'everyOther' ? 'selected' : ''}>격일 (2일마다)</option>
+              <option value="custom" ${typeVal === 'custom' ? 'selected' : ''}>특정 요일 선택</option>
+            </select>
+            <div class="day-pills" style="display: ${typeVal === 'custom' ? 'flex' : 'none'}; gap: 3px;">
+              ${dayPillsHtml}
+            </div>
+          </div>
+        </td>
+        <td style="text-align: center;">
+          <button class="delete-btn" style="display: inline-block;" onclick="removeActionPlanRow(this, '${user}')" title="삭제">×</button>
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+      if (!skipSave) autoSaveData();
+    }
+
+    function removeActionPlanRow(btn, user) {
+      btn.closest('tr').remove();
+      autoSaveData();
+    }
+
+    function clearAutoTasks(user, silent = false) {
+      const currPage = appState.pages[appState.activePageIndex];
+      if (!currPage || !currPage[user]) return;
+
+      let clearedCount = 0;
+      for (let w = 0; w < totalWeeks; w++) {
+        for (let d = 0; d < 7; d++) {
+          const dayData = currPage[user].weeks[w].days[d];
+          if (dayData && dayData.tasks) {
+            const initialLen = dayData.tasks.length;
+            dayData.tasks = dayData.tasks.filter(t => !t.isAuto);
+            clearedCount += (initialLen - dayData.tasks.length);
+          }
+        }
+      }
+
+      loadActivePageToDOM();
+
+      if (!silent) {
+        alert(`표에서 자동 생성되었던 세부 목표 ${clearedCount}개가 초기화되었습니다.`);
+      }
+    }
+
+    function syncActionPlans(user) {
+      saveDataToMemory();
+      const currPage = appState.pages[appState.activePageIndex];
+      if (!currPage || !currPage[user]) return;
+
+      const actionPlans = currPage[user].actionPlans || [];
+      const validPlans = actionPlans.filter(p => p.text.trim() !== '');
+
+      const startWeek = parseInt(document.getElementById(`syncStartWeek-${user}`).value || '1', 10);
+      const startDay = parseInt(document.getElementById(`syncStartDay-${user}`).value || '0', 10);
+      const startAbsDay = (startWeek - 1) * 7 + startDay;
+
+      const existingScoresMap = {};
+      for (let w = 0; w < totalWeeks; w++) {
+        for (let d = 0; d < 7; d++) {
+          const absDay = w * 7 + d;
+          if (absDay >= startAbsDay) {
+            const dayData = currPage[user].weeks[w].days[d];
+            if (dayData && dayData.tasks) {
+              dayData.tasks.forEach(t => {
+                if (t.isAuto && t.score > 0) {
+                  const key = `${w}_${d}_${t.text.trim()}`;
+                  existingScoresMap[key] = t.score;
+                }
+              });
+              dayData.tasks = dayData.tasks.filter(t => !t.isAuto);
+            }
+          }
+        }
+      }
+
+      if (validPlans.length === 0) {
+        loadActivePageToDOM();
+        alert(`${startWeek}주차 ${daysName[startDay]}요일부터의 자동 생성 항목이 삭제되었습니다.`);
+        return;
+      }
+
+      let addedCount = 0;
+
+      validPlans.forEach(plan => {
+        const taskText = plan.text.trim();
+        for (let w = 0; w < totalWeeks; w++) {
+          for (let d = 0; d < 7; d++) {
+            const absDay = w * 7 + d;
+            if (absDay < startAbsDay) continue;
+
+            let shouldAdd = false;
+            if (plan.type === 'daily') {
+              shouldAdd = true;
+            } else if (plan.type === 'everyOther') {
+              shouldAdd = ((absDay - startAbsDay) % 2 === 0);
+            } else if (plan.type === 'custom') {
+              shouldAdd = plan.days.includes(d);
+            }
+
+            if (shouldAdd) {
+              const weekData = currPage[user].weeks[w];
+              const dayData = weekData.days[d];
+              if (!dayData.tasks) dayData.tasks = [];
+
+              const scoreKey = `${w}_${d}_${taskText}`;
+              const savedScore = existingScoresMap[scoreKey] || 0;
+
+              dayData.tasks.push({
+                score: savedScore,
+                text: taskText,
+                isAuto: true
+              });
+              addedCount++;
+            }
+          }
+        }
+      });
+
+      loadActivePageToDOM();
+      alert(`[${startWeek}주차 ${daysName[startDay]}요일]부터 최신 실행 계획이 성공적으로 동기화되었습니다!`);
+    }
+
+    /* --- 메모리 상태 동기화 함수 --- */
+    function saveDataToMemory() {
+      const currentPage = appState.pages[appState.activePageIndex];
+      if (!currentPage) return;
+
+      users.forEach(user => {
+        const actionPlanRows = document.querySelectorAll(`#actionPlanBody-${user} tr`);
+        const actionPlans = [];
+        actionPlanRows.forEach(row => {
+          const text = row.querySelector('.action-plan-text').value;
+          const type = row.querySelector('.action-plan-type').value;
+          const activePills = row.querySelectorAll('.day-pill.active');
+          const days = [];
+          activePills.forEach(pill => days.push(parseInt(pill.getAttribute('data-day'), 10)));
+          actionPlans.push({ text, type, days });
+        });
+
+        const weeksData = [];
         for (let i = 1; i <= totalWeeks; i++) {
           const weekCard = document.getElementById(`card-${user}-${i}`);
           const weekGoal = weekCard ? weekCard.querySelector('.week-goal-input').value : '';
+          const weekNote = weekCard ? weekCard.querySelector('.week-note-input').value : '';
           const daysData = [];
 
           for (let j = 0; j < 7; j++) {
             const taskList = document.getElementById(`task-list-${user}-${i}-${j}`);
+            const dayNoteInput = document.getElementById(`dayNote-${user}-${i}-${j}`);
+            const dayNote = dayNoteInput ? dayNoteInput.value : '';
+
             const tasks = [];
             if (taskList) {
               const items = taskList.querySelectorAll('.task-item');
               items.forEach(item => {
                 const score = parseInt(item.getAttribute('data-score') || '0', 10);
-                const input = item.querySelector('.task-input');
-                tasks.push({ score: score, text: input ? input.value : '' });
+                const isAuto = item.getAttribute('data-auto') === 'true';
+                const text = item.querySelector('.task-input')?.value || '';
+                tasks.push({ score, text, isAuto });
               });
             }
-            daysData.push(tasks);
+            daysData.push({ note: dayNote, tasks });
           }
-          data[user].weeks.push({ weekGoal: weekGoal, days: daysData });
+          weeksData.push({ weekGoal, weekNote, days: daysData });
         }
+
+        currentPage[user] = {
+          name: document.getElementById(`name-${user}`).value,
+          mainGoal: document.getElementById(`mainGoal-${user}`).value,
+          mainNote: document.getElementById(`mainNote-${user}`).value,
+          startDate: document.getElementById(`startDate-${user}`).value,
+          syncStartWeek: document.getElementById(`syncStartWeek-${user}`)?.value || '1',
+          syncStartDay: document.getElementById(`syncStartDay-${user}`)?.value || '0',
+          actionPlans,
+          weeks: weeksData
+        };
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    // 2. 전체 진행률 계산
-    function updateTotalProgress(user) {
-      const allTasks = document.querySelectorAll(`#${user}-section .task-item`);
-      let totalScore = 0, maxScore = 0;
-
-      allTasks.forEach(item => {
-        totalScore += parseInt(item.getAttribute('data-score') || '0', 10);
-        maxScore += 5; 
-      });
-      
-      let totalPercent = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
-      document.getElementById(`totalProgressBar-${user}`).style.width = `${totalPercent}%`;
-      document.getElementById(`totalProgressText-${user}`).textContent = `${totalPercent}%`;
-    }
-
-    // 3. 주차별 진행률 계산 및 업데이트
-    function updateWeekProgress(user, weekIndex) {
-      const weekTasks = document.querySelectorAll(`#card-${user}-${weekIndex} .task-item`);
-      let totalScore = 0, maxScore = 0;
-
-      weekTasks.forEach(item => {
-        totalScore += parseInt(item.getAttribute('data-score') || '0', 10);
-        maxScore += 5;
-      });
-      
-      let weekPercent = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
-      document.getElementById(`weekProgressBar-${user}-${weekIndex}`).style.width = `${weekPercent}%`;
-      document.getElementById(`weekProgressText-${user}-${weekIndex}`).textContent = `${weekPercent}%`;
-      updateTotalProgress(user);
-    }
-
-    // 4. 점수 설정
-    function setRating(btnElement, user, weekIndex, selectedScore) {
-      const taskItem = btnElement.closest('.task-item');
-      const currentScore = parseInt(taskItem.getAttribute('data-score') || '0', 10);
-      let newScore = currentScore === selectedScore ? 0 : selectedScore;
-      
-      taskItem.setAttribute('data-score', newScore);
-      
-      const buttons = taskItem.querySelectorAll('.rating-btn');
-      buttons.forEach((b, index) => {
-        if (index < newScore) b.classList.add('active');
-        else b.classList.remove('active');
-      });
-      
-      const input = taskItem.querySelector('.task-input');
-      if (newScore === 5) input.classList.add('task-completed');
-      else input.classList.remove('task-completed');
-      
-      updateWeekProgress(user, weekIndex);
-      saveData();
-    }
-
-    // 5. 새로운 세부 목표 추가
-    function addTask(user, weekIndex, dayIndex) {
-      const taskList = document.getElementById(`task-list-${user}-${weekIndex}-${dayIndex}`);
-      const taskItem = document.createElement('div');
-      taskItem.className = 'task-item';
-      taskItem.setAttribute('data-score', '0');
-      
-      let ratingBtns = '';
-      for (let k = 1; k <= 5; k++) {
-        ratingBtns += `<button class="rating-btn" type="button" onclick="setRating(this, '${user}', ${weekIndex}, ${k})">${k}</button>`;
-      }
-      
-      taskItem.innerHTML = `
-        <div class="rating-group">${ratingBtns}</div>
-        <input type="text" class="task-input" placeholder="세부 목표 입력" oninput="saveData()">
-        <button class="delete-btn" onclick="removeTask(this, '${user}', ${weekIndex})" title="삭제">×</button>
-      `;
-      
-      taskList.appendChild(taskItem);
-      updateWeekProgress(user, weekIndex);
-      saveData();
-    }
-
-    // 6. 세부 목표 삭제
-    function removeTask(buttonElement, user, weekIndex) {
-      const taskItem = buttonElement.parentElement;
-      taskItem.remove();
-      updateWeekProgress(user, weekIndex);
-      saveData();
-    }
-
-    // 7. 데이터 불러오기 및 UI 렌더링
-    function initTracker() {
-      initTheme(); // 테마 초기화 호출
-      
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      let parsedData = null;
-
-      if (savedData) {
-        try { parsedData = JSON.parse(savedData); } catch(e) { console.error("데이터 파싱 오류"); }
-      }
+    function loadActivePageToDOM() {
+      const page = appState.pages[appState.activePageIndex];
+      if (!page) return;
 
       users.forEach(user => {
-        let userData = parsedData ? parsedData[user] : null;
+        const data = page[user] || createBlankUserData();
 
-        if (!userData) {
-          userData = {
-            name: '', mainGoal: '',
-            weeks: Array.from({ length: totalWeeks }, () => ({
-              weekGoal: '', days: Array.from({ length: 7 }, () => [{ score: 0, text: '' }])
-            }))
-          };
+        document.getElementById(`name-${user}`).value = data.name || '';
+        document.getElementById(`mainGoal-${user}`).value = data.mainGoal || '';
+        document.getElementById(`mainNote-${user}`).value = data.mainNote || '';
+        document.getElementById(`startDate-${user}`).value = data.startDate || '';
+
+        const weekSel = document.getElementById(`syncStartWeek-${user}`);
+        const daySel = document.getElementById(`syncStartDay-${user}`);
+        if (weekSel) weekSel.value = data.syncStartWeek || '1';
+        if (daySel) daySel.value = data.syncStartDay || '0';
+
+        const tbody = document.getElementById(`actionPlanBody-${user}`);
+        tbody.innerHTML = '';
+        if (data.actionPlans && data.actionPlans.length > 0) {
+          data.actionPlans.forEach(plan => addActionPlanRow(user, plan, true));
         }
 
-        document.getElementById(`name-${user}`).value = userData.name || '';
-        document.getElementById(`mainGoal-${user}`).value = userData.mainGoal || '';
-        
-        const weeksContainer = document.getElementById(`weeksContainer-${user}`);
-        weeksContainer.innerHTML = '';
+        if (data.weeks) {
+          for (let i = 1; i <= totalWeeks; i++) {
+            const weekData = data.weeks[i - 1];
+            const weekCard = document.getElementById(`card-${user}-${i}`);
+            if (weekCard && weekData) {
+              weekCard.querySelector('.week-goal-input').value = weekData.weekGoal || '';
+              weekCard.querySelector('.week-note-input').value = weekData.weekNote || '';
 
-        userData.weeks.forEach((week, wIndex) => {
-          const weekNum = wIndex + 1;
-          const card = document.createElement('div');
-          card.className = 'week-card';
-          card.id = `card-${user}-${weekNum}`;
+              for (let j = 0; j < 7; j++) {
+                const dayData = weekData.days ? weekData.days[j] : null;
+                const taskList = document.getElementById(`task-list-${user}-${i}-${j}`);
+                const dayNoteInput = document.getElementById(`dayNote-${user}-${i}-${j}`);
 
-          let daysHtml = '';
-          week.days.forEach((dayTasks, dIndex) => {
-            let tasksHtml = '';
-            dayTasks.forEach(task => {
-              let score = task.score !== undefined ? task.score : (task.checked ? 5 : 0);
-              const completedClass = score === 5 ? 'task-completed' : '';
-              
-              let ratingBtns = '';
-              for (let k = 1; k <= 5; k++) {
-                const activeClass = k <= score ? 'active' : '';
-                ratingBtns += `<button class="rating-btn ${activeClass}" type="button" onclick="setRating(this, '${user}', ${weekNum}, ${k})">${k}</button>`;
+                if (taskList) taskList.innerHTML = '';
+                if (dayNoteInput) dayNoteInput.value = dayData ? (dayData.note || '') : '';
+
+                if (dayData && dayData.tasks) {
+                  dayData.tasks.forEach(t => addTaskItem(user, i, j, t));
+                }
               }
-
-              tasksHtml += `
-                <div class="task-item" data-score="${score}">
-                  <div class="rating-group">${ratingBtns}</div>
-                  <input type="text" class="task-input ${completedClass}" value="${escapeHtml(task.text)}" placeholder="세부 목표 입력" oninput="saveData()">
-                  <button class="delete-btn" onclick="removeTask(this, '${user}', ${weekNum})" title="삭제">×</button>
-                </div>
-              `;
-            });
-
-            daysHtml += `
-              <div class="day-section">
-                <div class="day-header">
-                  <span>${daysName[dIndex]}요일</span>
-                  <button class="add-btn" onclick="addTask('${user}', ${weekNum}, ${dIndex})" title="목표 추가">+</button>
-                </div>
-                <div class="task-list" id="task-list-${user}-${weekNum}-${dIndex}">
-                  ${tasksHtml}
-                </div>
-              </div>
-            `;
-          });
-
-          card.innerHTML = `
-            <div class="week-header">${weekNum}주차</div>
-            <input type="text" class="week-goal-input" value="${escapeHtml(week.weekGoal || '')}" placeholder="${weekNum}주차 목표 입력" oninput="saveData()">
-            <div>${daysHtml}</div>
-            <div class="week-footer">
-              <div class="progress-container" style="height: 6px; margin-top: 0;">
-                <div class="progress-bar" id="weekProgressBar-${user}-${weekNum}"></div>
-              </div>
-              <div class="progress-text" id="weekProgressText-${user}-${weekNum}" style="font-size: 11px;">0%</div>
-            </div>
-          `;
-
-          weeksContainer.appendChild(card);
-          updateWeekProgress(user, weekNum);
-        });
-        updateTotalProgress(user);
+            }
+          }
+        }
+        updateAllDates(user);
+        calculateProgress(user);
       });
     }
 
-    // 8. JSON 파일로 내보내기 (Save)
-    function exportToJson() {
-      saveData(); 
-      const dataStr = localStorage.getItem(STORAGE_KEY);
-      if (!dataStr) { alert("저장할 데이터가 없습니다."); return; }
-
-      const blob = new Blob([dataStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `12week_goal_tracker_${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+    /* --- 로컬 자동 저장 (LocalStorage) --- */
+    function autoSaveData() {
+      saveDataToMemory();
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        } catch (e) {
+          console.error('자동 저장 실패:', e);
+        }
+      }, 300); // 0.3초 딜레이로 빈번한 저장 부하 방지
     }
 
-    // 9. 숨겨진 파일 인풋 트리거
-    function triggerFileInput() {
-      document.getElementById('fileInput').click();
+    function loadFromLocalStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed.pages) && parsed.pages.length > 0) {
+            appState = parsed;
+            if (appState.activePageIndex >= appState.pages.length) {
+              appState.activePageIndex = 0;
+            }
+            return true;
+          }
+        }
+      } catch (e) {
+        console.error('로컬 데이터 불러오기 실패:', e);
+      }
+      return false;
     }
 
-    // 10. JSON 파일 불러오기 (Load)
-    function importFromJson(event) {
+    function clearLocalStorage() {
+      if (confirm('브라우저에 자동 저장된 모든 데이터를 초기화하시겠습니까? (복구할 수 없습니다)')) {
+        localStorage.removeItem(STORAGE_KEY);
+        appState = {
+          activePageIndex: 0,
+          pages: [createNewPageObject('12주 목표 #1')]
+        };
+        initTracker();
+        alert('초기화되었습니다.');
+      }
+    }
+
+    /* --- 💾 JSON 파일 저장 및 📂 불러오기 기능 --- */
+    function exportJsonData() {
+      saveDataToMemory();
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const downloadAnchor = document.createElement('a');
+
+      const now = new Date();
+      const dateStr = now.getFullYear() +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        String(now.getDate()).padStart(2, '0') + "_" +
+        String(now.getHours()).padStart(2, '0') +
+        String(now.getMinutes()).padStart(2, '0') +
+        String(now.getSeconds()).padStart(2, '0');
+
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `12week_tracker_${dateStr}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importJsonData(event) {
       const file = event.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
-          const contents = e.target.result;
-          JSON.parse(contents); 
-          localStorage.setItem(STORAGE_KEY, contents);
-          initTracker();
-          alert("데이터를 성공적으로 불러왔습니다!");
-        } catch (error) {
-          alert("유효하지 않은 JSON 파일입니다.");
+          const loadedData = JSON.parse(e.target.result);
+          if (loadedData && Array.isArray(loadedData.pages) && typeof loadedData.activePageIndex === 'number') {
+            appState = loadedData;
+            
+            if (appState.activePageIndex >= appState.pages.length) {
+              appState.activePageIndex = appState.pages.length - 1;
+            }
+
+            renderPageTabs();
+            loadActivePageToDOM();
+            autoSaveData(); // 로드한 내용도 즉시 로컬에 반영
+            alert('JSON 데이터가 성공적으로 불러와졌고 로컬에 저장되었습니다!');
+          } else {
+            alert('올바른 트래커 JSON 파일 형식이 아닙니다.');
+          }
+        } catch (err) {
+          alert('JSON 파일을 읽는 중 오류가 발생했습니다.\n' + err.message);
         }
       };
       reader.readAsText(file);
-      event.target.value = ''; 
+      event.target.value = '';
     }
 
-    window.onload = initTracker;
+    function initTracker() {
+      buildGridHTML();
+      if (!loadFromLocalStorage()) {
+        appState.pages = [createNewPageObject('12주 목표 #1')];
+        appState.activePageIndex = 0;
+      }
+      renderPageTabs();
+      loadActivePageToDOM();
+    }
+
+    /* --- 다크 모드 전환 --- */
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle('dark-mode');
+      const themeBtn = document.getElementById('themeToggleBtn');
+      themeBtn.textContent = isDark ? '☀️ 라이트 모드' : '🌙 다크 모드';
+    }
+
+    // 초기화 실행
+    window.addEventListener('DOMContentLoaded', () => {
+      initTracker();
+    });
   </script>
 </body>
 </html>
