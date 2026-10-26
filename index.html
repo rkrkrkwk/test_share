@@ -280,6 +280,10 @@
       margin-top: 6px;
       border-style: dashed;
       background-color: transparent;
+      min-height: 26px;
+      line-height: 1.4;
+      overflow: hidden;
+      display: block;
     }
 
     /* ⚡ 실행 계획 표 스타일 */
@@ -728,6 +732,11 @@
     let saveTimeout = null;
     let isLoading = false; // DOM 재구성 중에는 저장(메모리 덮어쓰기) 금지
 
+    function autoResizeNote(el) {
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 2 + 'px';
+    }
+
     function escapeHtml(str) {
       return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
@@ -802,7 +811,7 @@
                   <button class="add-btn" onclick="addTaskItem('${user}', ${i}, ${j})" title="세부 목표 추가">+</button>
                 </div>
                 <div class="task-list" id="task-list-${user}-${i}-${j}"></div>
-                <input type="text" class="note-input day-note-input" id="dayNote-${user}-${i}-${j}" placeholder="✏️ 일일 메모" oninput="autoSaveData()">
+                <textarea class="note-input day-note-input" id="dayNote-${user}-${i}-${j}" rows="1" placeholder="✏️ 일일 메모" oninput="autoResizeNote(this); autoSaveData()"></textarea>
               </div>
             `;
           }
@@ -1384,7 +1393,7 @@
                 const dayNoteInput = document.getElementById(`dayNote-${user}-${i}-${j}`);
 
                 if (taskList) taskList.innerHTML = '';
-                if (dayNoteInput) dayNoteInput.value = dayData ? (dayData.note || '') : '';
+                if (dayNoteInput) { dayNoteInput.value = dayData ? (dayData.note || '') : ''; autoResizeNote(dayNoteInput); }
 
                 if (dayData && dayData.tasks) {
                   dayData.tasks.forEach(t => addTaskItem(user, i, j, t));
