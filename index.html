@@ -584,11 +584,12 @@
       <!-- 페이지 탭 전환 바 -->
       <div class="page-tabs-bar" id="pageTabsContainer"></div>
 
-      <!-- 세이브 / 로드 및 테마 변경 버튼 -->
+      <!-- 자동 저장 및 수동 세이브/로드 버튼 그룹 -->
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button class="action-btn" onclick="exportJsonData()">💾 데이터 저장 (JSON)</button>
-        <button class="action-btn" onclick="document.getElementById('jsonFileInput').click()">📂 데이터 불러오기</button>
+        <button class="action-btn" onclick="exportJsonData()">💾 JSON 다운로드</button>
+        <button class="action-btn" onclick="document.getElementById('jsonFileInput').click()">📂 JSON 파일 로드</button>
         <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="importJsonData(event)">
+        <button class="action-btn" onclick="clearLocalStorage()" style="color: #e85a5a; border-color: #e85a5a;">🧹 로컬 데이터 초기화</button>
         <button class="action-btn" id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
       </div>
     </div>
@@ -598,12 +599,12 @@
     <!-- 사용자 1 영역 -->
     <div class="user-section" id="user1-section">
       <div class="header">
-        <input type="text" class="user-name" id="name-user1" placeholder="👤 첫 번째 사용자 이름">
+        <input type="text" class="user-name" id="name-user1" placeholder="👤 첫 번째 사용자 이름" oninput="autoSaveData()">
         <div class="main-goal">
-          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user1">
+          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user1" oninput="autoSaveData()">
         </div>
 
-        <textarea class="note-input main-note-input" id="mainNote-user1" placeholder="📝 12주 전체 목표 총평 및 비고"></textarea>
+        <textarea class="note-input main-note-input" id="mainNote-user1" placeholder="📝 12주 전체 목표 총평 및 비고" oninput="autoSaveData()"></textarea>
 
         <div class="date-picker-container">
           <span class="date-picker-label">📅 시작일:</span>
@@ -631,8 +632,8 @@
         <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted-text); font-weight: 600;">
             <span>⏱️ 적용 시작 시점:</span>
-            <select id="syncStartWeek-user1" class="start-date-input" style="font-size: 12px; padding: 2px 6px;"></select>
-            <select id="syncStartDay-user1" class="start-date-input" style="font-size: 12px; padding: 2px 6px;"></select>
+            <select id="syncStartWeek-user1" class="start-date-input" style="font-size: 12px; padding: 2px 6px;" onchange="autoSaveData()"></select>
+            <select id="syncStartDay-user1" class="start-date-input" style="font-size: 12px; padding: 2px 6px;" onchange="autoSaveData()"></select>
             <span>부터 적용</span>
           </div>
           <button class="action-btn btn-sync-user1" style="font-size: 12px; padding: 5px 12px;" onclick="syncActionPlans('user1')">🔄 변경사항 반영 (재동기화)</button>
@@ -656,12 +657,12 @@
     <!-- 사용자 2 영역 -->
     <div class="user-section" id="user2-section">
       <div class="header">
-        <input type="text" class="user-name" id="name-user2" placeholder="👤 두 번째 사용자 이름">
+        <input type="text" class="user-name" id="name-user2" placeholder="👤 두 번째 사용자 이름" oninput="autoSaveData()">
         <div class="main-goal">
-          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user2">
+          🎯 <input type="text" placeholder="12주 핵심 목표를 입력하세요" id="mainGoal-user2" oninput="autoSaveData()">
         </div>
 
-        <textarea class="note-input main-note-input" id="mainNote-user2" placeholder="📝 12주 전체 목표 총평 및 비고"></textarea>
+        <textarea class="note-input main-note-input" id="mainNote-user2" placeholder="📝 12주 전체 목표 총평 및 비고" oninput="autoSaveData()"></textarea>
 
         <div class="date-picker-container">
           <span class="date-picker-label">📅 시작일:</span>
@@ -689,8 +690,8 @@
         <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted-text); font-weight: 600;">
             <span>⏱️ 적용 시작 시점:</span>
-            <select id="syncStartWeek-user2" class="start-date-input" style="font-size: 12px; padding: 2px 6px;"></select>
-            <select id="syncStartDay-user2" class="start-date-input" style="font-size: 12px; padding: 2px 6px;"></select>
+            <select id="syncStartWeek-user2" class="start-date-input" style="font-size: 12px; padding: 2px 6px;" onchange="autoSaveData()"></select>
+            <select id="syncStartDay-user2" class="start-date-input" style="font-size: 12px; padding: 2px 6px;" onchange="autoSaveData()"></select>
             <span>부터 적용</span>
           </div>
           <button class="action-btn btn-sync-user2" style="font-size: 12px; padding: 5px 12px;" onclick="syncActionPlans('user2')">🔄 변경사항 반영 (재동기화)</button>
@@ -716,12 +717,16 @@
     const totalWeeks = 12;
     const daysName = ['월', '화', '수', '목', '금', '토', '일'];
     const users = ['user1', 'user2'];
+    const STORAGE_KEY = '12week_tracker_autoresume_data';
 
-    // 전역 애플리케이션 상태 (다중 페이지 지원, 메모리 상에서만 유지)
+    // 전역 애플리케이션 상태
     let appState = {
       activePageIndex: 0,
       pages: []
     };
+
+    let saveTimeout = null;
+    let isLoading = false; // DOM 재구성 중에는 저장(메모리 덮어쓰기) 금지
 
     function escapeHtml(str) {
       return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -797,7 +802,7 @@
                   <button class="add-btn" onclick="addTaskItem('${user}', ${i}, ${j})" title="세부 목표 추가">+</button>
                 </div>
                 <div class="task-list" id="task-list-${user}-${i}-${j}"></div>
-                <input type="text" class="note-input day-note-input" id="dayNote-${user}-${i}-${j}" placeholder="✏️ 일일 메모">
+                <input type="text" class="note-input day-note-input" id="dayNote-${user}-${i}-${j}" placeholder="✏️ 일일 메모" oninput="autoSaveData()">
               </div>
             `;
           }
@@ -807,10 +812,10 @@
               <span>${i}주차</span>
               <span class="week-period" id="weekPeriod-${user}-${i}"></span>
             </div>
-            <input type="text" class="week-goal-input" placeholder="${i}주차 목표">
+            <input type="text" class="week-goal-input" placeholder="${i}주차 목표" oninput="autoSaveData()">
             ${daysHtml}
             <div class="week-footer">
-              <textarea class="note-input week-note-input" placeholder="📝 ${i}주차 메모 / 성과 피드백"></textarea>
+              <textarea class="note-input week-note-input" placeholder="📝 ${i}주차 메모 / 성과 피드백" oninput="autoSaveData()"></textarea>
             </div>
           `;
           container.appendChild(weekCard);
@@ -878,6 +883,7 @@
       appState.activePageIndex = index;
       renderPageTabs();
       loadActivePageToDOM();
+      autoSaveData();
     }
 
     function addNewPage() {
@@ -888,11 +894,14 @@
       appState.activePageIndex = newIndex;
       renderPageTabs();
       loadActivePageToDOM();
+      autoSaveData();
     }
 
     function renamePage(index, newTitle) {
       if (!newTitle.trim()) return;
       appState.pages[index].title = newTitle.trim();
+      renderPageTabs();
+      autoSaveData();
     }
 
     function deletePage(index, event) {
@@ -909,6 +918,7 @@
         }
         renderPageTabs();
         loadActivePageToDOM();
+        autoSaveData();
       }
     }
 
@@ -964,6 +974,7 @@
 
     function handleDateChange(user) {
       updateAllDates(user);
+      autoSaveData();
     }
 
     function calculateProgress(user) {
@@ -1022,7 +1033,7 @@
       item.innerHTML = `
         <div class="drag-handle" title="순서 이동">⋮⋮</div>
         <div class="rating-group">${ratingBtnsHtml}</div>
-        <input type="text" class="task-input" value="${escapeHtml(taskData.text)}" placeholder="목표 입력">
+        <input type="text" class="task-input" value="${escapeHtml(taskData.text)}" placeholder="목표 입력" oninput="autoSaveData()">
         <button type="button" class="delete-btn" onclick="removeTaskItem(this, '${user}')" title="삭제">×</button>
       `;
 
@@ -1032,6 +1043,7 @@
       taskList.appendChild(item);
       initDragContainer(taskList, user);
       calculateProgress(user);
+      autoSaveData();
     }
 
     function setTaskScore(btn, score, user) {
@@ -1049,12 +1061,14 @@
       }
 
       calculateProgress(user);
+      autoSaveData();
     }
 
     function removeTaskItem(btn, user) {
       const item = btn.closest('.task-item');
       item.remove();
       calculateProgress(user);
+      autoSaveData();
     }
 
     let draggedItem = null;
@@ -1068,9 +1082,12 @@
     function handleDragEnd() {
       this.classList.remove('dragging');
       draggedItem = null;
+      autoSaveData();
     }
 
     function initDragContainer(container, user) {
+      if (container.dataset.dragInit) return;
+      container.dataset.dragInit = '1';
       container.addEventListener('dragover', e => {
         e.preventDefault();
         const afterElement = getDragAfterElement(container, e.clientY);
@@ -1104,10 +1121,12 @@
       if (dayPillsGroup) {
         dayPillsGroup.style.display = (selectEl.value === 'custom') ? 'flex' : 'none';
       }
+      autoSaveData();
     }
 
     function toggleDayPill(btn) {
       btn.classList.toggle('active');
+      autoSaveData();
     }
 
     function addActionPlanRow(user, data = null, skipSave = false) {
@@ -1126,7 +1145,7 @@
 
       tr.innerHTML = `
         <td>
-          <input type="text" class="task-input action-plan-text" value="${escapeHtml(textVal)}" placeholder="예: 매일 30분 운동하기">
+          <input type="text" class="task-input action-plan-text" value="${escapeHtml(textVal)}" placeholder="예: 매일 30분 운동하기" oninput="autoSaveData()">
         </td>
         <td>
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
@@ -1146,13 +1165,16 @@
       `;
 
       tbody.appendChild(tr);
+      if (!skipSave) autoSaveData();
     }
 
     function removeActionPlanRow(btn, user) {
       btn.closest('tr').remove();
+      autoSaveData();
     }
 
     function clearAutoTasks(user, silent = false) {
+      saveDataToMemory();
       const currPage = appState.pages[appState.activePageIndex];
       if (!currPage || !currPage[user]) return;
 
@@ -1169,6 +1191,7 @@
       }
 
       loadActivePageToDOM();
+      autoSaveData();
 
       if (!silent) {
         alert(`표에서 자동 생성되었던 세부 목표 ${clearedCount}개가 초기화되었습니다.`);
@@ -1180,8 +1203,19 @@
       const currPage = appState.pages[appState.activePageIndex];
       if (!currPage || !currPage[user]) return;
 
-      const actionPlans = currPage[user].actionPlans || [];
-      const validPlans = actionPlans.filter(p => p.text.trim() !== '');
+      const actionPlanRows = document.querySelectorAll(`#actionPlanBody-${user} tr`);
+      const currentActionPlans = [];
+      actionPlanRows.forEach(row => {
+        const text = row.querySelector('.action-plan-text')?.value || '';
+        const type = row.querySelector('.action-plan-type')?.value || 'daily';
+        const activePills = row.querySelectorAll('.day-pill.active');
+        const days = [];
+        activePills.forEach(pill => days.push(parseInt(pill.getAttribute('data-day'), 10)));
+        currentActionPlans.push({ text, type, days });
+      });
+      currPage[user].actionPlans = currentActionPlans;
+
+      const validPlans = currentActionPlans.filter(p => p.text.trim() !== '');
 
       const startWeek = parseInt(document.getElementById(`syncStartWeek-${user}`).value || '1', 10);
       const startDay = parseInt(document.getElementById(`syncStartDay-${user}`).value || '0', 10);
@@ -1208,11 +1242,10 @@
 
       if (validPlans.length === 0) {
         loadActivePageToDOM();
+        autoSaveData();
         alert(`${startWeek}주차 ${daysName[startDay]}요일부터의 자동 생성 항목이 삭제되었습니다.`);
         return;
       }
-
-      let addedCount = 0;
 
       validPlans.forEach(plan => {
         const taskText = plan.text.trim();
@@ -1243,13 +1276,13 @@
                 text: taskText,
                 isAuto: true
               });
-              addedCount++;
             }
           }
         }
       });
 
       loadActivePageToDOM();
+      autoSaveData();
       alert(`[${startWeek}주차 ${daysName[startDay]}요일]부터 최신 실행 계획이 성공적으로 동기화되었습니다!`);
     }
 
@@ -1262,8 +1295,10 @@
         const actionPlanRows = document.querySelectorAll(`#actionPlanBody-${user} tr`);
         const actionPlans = [];
         actionPlanRows.forEach(row => {
-          const text = row.querySelector('.action-plan-text').value;
-          const type = row.querySelector('.action-plan-type').value;
+          const textInput = row.querySelector('.action-plan-text');
+          const typeSelect = row.querySelector('.action-plan-type');
+          const text = textInput ? textInput.value : '';
+          const type = typeSelect ? typeSelect.value : 'daily';
           const activePills = row.querySelectorAll('.day-pill.active');
           const days = [];
           activePills.forEach(pill => days.push(parseInt(pill.getAttribute('data-day'), 10)));
@@ -1314,6 +1349,8 @@
       const page = appState.pages[appState.activePageIndex];
       if (!page) return;
 
+      isLoading = true;
+      try {
       users.forEach(user => {
         const data = page[user] || createBlankUserData();
 
@@ -1359,11 +1396,59 @@
         updateAllDates(user);
         calculateProgress(user);
       });
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    /* --- 로컬 자동 저장 (LocalStorage) --- */
+    function autoSaveData() {
+      if (isLoading) return;
+      saveDataToMemory();
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        } catch (e) {
+          console.error('자동 저장 실패:', e);
+        }
+      }, 300);
+    }
+
+    function loadFromLocalStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed.pages) && parsed.pages.length > 0) {
+            appState = parsed;
+            if (appState.activePageIndex >= appState.pages.length) {
+              appState.activePageIndex = 0;
+            }
+            return true;
+          }
+        }
+      } catch (e) {
+        console.error('로컬 데이터 불러오기 실패:', e);
+      }
+      return false;
+    }
+
+    function clearLocalStorage() {
+      if (confirm('브라우저에 자동 저장된 모든 데이터를 초기화하시겠습니까? (복구할 수 없습니다)')) {
+        localStorage.removeItem(STORAGE_KEY);
+        appState = {
+          activePageIndex: 0,
+          pages: [createNewPageObject('12주 목표 #1')]
+        };
+        initTracker();
+        alert('초기화되었습니다.');
+      }
     }
 
     /* --- 💾 JSON 파일 저장 및 📂 불러오기 기능 --- */
     function exportJsonData() {
-      saveDataToMemory(); // 최신 DOM 상태를 appState에 동기화
+      saveDataToMemory();
 
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
       const downloadAnchor = document.createElement('a');
@@ -1394,14 +1479,14 @@
           if (loadedData && Array.isArray(loadedData.pages) && typeof loadedData.activePageIndex === 'number') {
             appState = loadedData;
             
-            // 페이지 범위를 벗어나지 않도록 안전 조치
             if (appState.activePageIndex >= appState.pages.length) {
-              appState.activePageIndex = 0;
+              appState.activePageIndex = appState.pages.length - 1;
             }
 
             renderPageTabs();
             loadActivePageToDOM();
-            alert('JSON 데이터가 성공적으로 불러와졌습니다!');
+            autoSaveData();
+            alert('JSON 데이터가 성공적으로 불러와졌고 로컬에 자동 저장되었습니다!');
           } else {
             alert('올바른 트래커 JSON 파일 형식이 아닙니다.');
           }
@@ -1410,12 +1495,12 @@
         }
       };
       reader.readAsText(file);
-      event.target.value = ''; // 동일한 파일 재업로드 지원을 위한 초기화
+      event.target.value = '';
     }
 
     function initTracker() {
       buildGridHTML();
-      if (!appState.pages || appState.pages.length === 0) {
+      if (!loadFromLocalStorage()) {
         appState.pages = [createNewPageObject('12주 목표 #1')];
         appState.activePageIndex = 0;
       }
