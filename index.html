@@ -390,6 +390,13 @@
       text-align: right;
     }
 
+    /* 주차별 달성도 */
+    .week-progress { margin-bottom: 12px; }
+    .week-progress .progress-container { height: 8px; margin-top: 0; }
+    .week-progress-text { font-size: 11px; color: var(--muted-text); margin-top: 3px; text-align: right; }
+    #user1-section .week-progress .progress-bar { background-color: var(--progress-fill-1); }
+    #user2-section .week-progress .progress-bar { background-color: var(--progress-fill-2); }
+
     /* 주차별 그리드 */
     .weeks-grid {
       display: grid;
@@ -592,6 +599,8 @@
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
         <button class="action-btn" onclick="exportJsonData()">💾 JSON 다운로드</button>
         <button class="action-btn" onclick="document.getElementById('jsonFileInput').click()">📂 JSON 파일 로드</button>
+        <button class="action-btn" onclick="document.getElementById('jsonMergeInput').click()">🔀 JSON 병합</button>
+        <input type="file" id="jsonMergeInput" accept=".json" multiple style="display: none;" onchange="mergeJsonFiles(event)">
         <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="importJsonData(event)">
         <button class="action-btn" onclick="clearLocalStorage()" style="color: #e85a5a; border-color: #e85a5a;">🧹 로컬 데이터 초기화</button>
         <button class="action-btn" id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
@@ -822,6 +831,10 @@
               <span class="week-period" id="weekPeriod-${user}-${i}"></span>
             </div>
             <input type="text" class="week-goal-input" placeholder="${i}주차 목표" oninput="autoSaveData()">
+            <div class="week-progress">
+              <div class="progress-container"><div class="progress-bar" id="weekProgressBar-${user}-${i}"></div></div>
+              <div class="week-progress-text" id="weekProgressText-${user}-${i}">달성도 0%</div>
+            </div>
             ${daysHtml}
             <div class="week-footer">
               <textarea class="note-input week-note-input" placeholder="📝 ${i}주차 메모 / 성과 피드백" oninput="autoSaveData()"></textarea>
@@ -986,11 +999,27 @@
       autoSaveData();
     }
 
+    function updateWeekProgress(user, week, score, tasks) {
+      const bar = document.getElementById(`weekProgressBar-${user}-${week}`);
+      const txt = document.getElementById(`weekProgressText-${user}-${week}`);
+      if (!bar || !txt) return;
+      if (tasks === 0) {
+        bar.style.width = '0%';
+        txt.textContent = '달성도 - (목표 없음)';
+        return;
+      }
+      const pct = Math.round((score / (tasks * 5)) * 100);
+      bar.style.width = `${pct}%`;
+      txt.textContent = `달성도 ${pct}% (${score} / ${tasks * 5}점)`;
+    }
+
     function calculateProgress(user) {
       let totalScore = 0;
       let totalTasks = 0;
 
       for (let i = 1; i <= totalWeeks; i++) {
+        let weekScore = 0;
+        let weekTasks = 0;
         for (let j = 0; j < 7; j++) {
           const taskList = document.getElementById(`task-list-${user}-${i}-${j}`);
           if (taskList) {
@@ -999,11 +1028,14 @@
               const score = parseInt(item.getAttribute('data-score') || '0', 10);
               if (score > 0) {
                 totalScore += score;
+                weekScore += score;
               }
               totalTasks += 1;
+              weekTasks += 1;
             });
           }
         }
+        updateWeekProgress(user, i, weekScore, weekTasks);
       }
 
       const progressBar = document.getElementById(`totalProgressBar-${user}`);
@@ -1505,6 +1537,104 @@
       };
       reader.readAsText(file);
       event.target.value = '';
+    }
+
+    /* --- 🔀 JSON 병합 --- */
+    function mergeText(a, b) {
+      a = a || ''; b = b || '';
+      if (!b.trim() || a.trim() === b.trim()) return a;
+      if (!a.trim()) return b;
+      if (a.includes(b)) return a;
+      return a + '\n' + b;
+    }
+
+    function mergeUserData(cur, inc, stats) {
+      if (!inc) return;
+      ['name', 'mainGoal', 'startDate'].forEach(k => { if (!cur[k] && inc[k]) cur[k] = inc[k]; });
+      cur.mainNote = mergeText(cur.mainNote, inc.mainNote);
+
+      // 실행 전략 표: 동일 항목은 중복 추가하지 않음
+      cur.actionPlans = cur.actionPlans || [];
+      const planKey = p => `${(p.text || '').trim()}|${p.type}|${(p.days || []).slice().sort().join(',')}`;
+      const keys = new Set(cur.actionPlans.map(planKey));
+      (inc.actionPlans || []).forEach(p => {
+        if (!(p.text || '').trim() || keys.has(planKey(p))) return;
+        cur.actionPlans.push(p); keys.add(planKey(p)); stats.plans++;
+      });
+
+      for (let w = 0; w < totalWeeks; w++) {
+        const cw = cur.weeks[w], iw = inc.weeks && inc.weeks[w];
+        if (!cw || !iw) continue;
+        if (!cw.weekGoal && iw.weekGoal) cw.weekGoal = iw.weekGoal;
+        cw.weekNote = mergeText(cw.weekNote, iw.weekNote);
+        for (let d = 0; d < 7; d++) {
+          const cd = cw.days[d], id = iw.days && iw.days[d];
+          if (!cd || !id) continue;
+          cd.note = mergeText(cd.note, id.note);
+          cd.tasks = cd.tasks || [];
+          (id.tasks || []).forEach(t => {
+            const text = (t.text || '').trim();
+            const same = cd.tasks.find(x => (x.text || '').trim() === text && !!x.isAuto === !!t.isAuto);
+            if (same) {
+              if ((t.score || 0) > (same.score || 0)) { same.score = t.score; stats.scores++; }
+            } else {
+              cd.tasks.push({ score: t.score || 0, text: t.text || '', isAuto: !!t.isAuto });
+              stats.tasks++;
+            }
+          });
+        }
+      }
+    }
+
+    function mergeJsonFiles(event) {
+      const files = [...event.target.files];
+      event.target.value = '';
+      if (!files.length) return;
+
+      Promise.all(files.map(f => new Promise(resolve => {
+        const r = new FileReader();
+        r.onload = e => {
+          try { resolve({ name: f.name, data: JSON.parse(e.target.result) }); }
+          catch (err) { resolve({ name: f.name, error: err.message }); }
+        };
+        r.onerror = () => resolve({ name: f.name, error: '읽기 실패' });
+        r.readAsText(f);
+      }))).then(results => {
+        saveDataToMemory();
+        const stats = { pagesAdded: 0, pagesMerged: 0, tasks: 0, scores: 0, plans: 0 };
+        const failed = [];
+
+        results.forEach(res => {
+          if (res.error || !res.data || !Array.isArray(res.data.pages)) {
+            failed.push(res.name); return;
+          }
+          res.data.pages.forEach(ip => {
+            const target = appState.pages.find(p => p.id === ip.id) ||
+                           appState.pages.find(p => p.title === ip.title);
+            if (!target) {
+              const copy = JSON.parse(JSON.stringify(ip));
+              if (!copy.id || appState.pages.some(p => p.id === copy.id)) copy.id = 'page_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+              users.forEach(u => { if (!copy[u]) copy[u] = createBlankUserData(); });
+              appState.pages.push(copy);
+              stats.pagesAdded++;
+            } else {
+              users.forEach(u => {
+                if (!target[u]) target[u] = createBlankUserData();
+                mergeUserData(target[u], ip[u], stats);
+              });
+              stats.pagesMerged++;
+            }
+          });
+        });
+
+        renderPageTabs();
+        loadActivePageToDOM();
+        autoSaveData();
+
+        let msg = `병합 완료\n- 새 페이지 추가: ${stats.pagesAdded}개\n- 기존 페이지에 병합: ${stats.pagesMerged}개\n- 추가된 세부 목표: ${stats.tasks}개\n- 더 높은 점수로 갱신: ${stats.scores}개\n- 추가된 실행 전략: ${stats.plans}개`;
+        if (failed.length) msg += `\n\n읽지 못한 파일: ${failed.join(', ')}`;
+        alert(msg);
+      });
     }
 
     function initTracker() {
